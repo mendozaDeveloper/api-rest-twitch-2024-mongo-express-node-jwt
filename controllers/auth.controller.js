@@ -1,5 +1,6 @@
 import { User } from '../models/User.js'
 import jwt from 'jsonwebtoken'
+import { generateToken, generateRefreshToken } from '../utils/tokenManager.js'
 
 export const register = async (req, res) => {
     const { email, password } = req.body
@@ -14,8 +15,10 @@ export const register = async (req, res) => {
         await user.save()
 
         //Generar el token con JWT
+        const { token, expiresIn } = generateToken(user.id);
+        generateRefreshToken(user.id, res);
 
-        return res.status(201).json({ ok: true })        
+        return resstatus(201).json({ token, expiresIn });  
     } catch (error) {
         console.log(error);
 
@@ -37,16 +40,40 @@ export const login = async (req, res) => {
         const respuestaPassword = await user.comparePassword(password)
         if(!respuestaPassword) return res.status(403).json({error: "Contraseña incorrecta"}) 
 
-        //Generar el token con JWT
-        const token = jwt.sign({uid: user._id}, process.env.JWT_SECRET)
+        const {token, expiresIn } = generateToken(user.id)
+        generateRefreshToken(user.id, res);
 
-
-        return res.json({ token })
+        return res.json({ token, expiresIn })
     } catch (error) {
         console.log(error);
 
         return res.status(500).json({error: "Error de servidor"})
     }
-
-    
 }
+
+export const infoUser = async(req, res) => {
+    try {
+        const user = await User.findById(req.uid)
+        return res.json({user})
+    } catch (error) {
+        return res.status(500).json({ error: "Error del servidor"})
+    }
+}
+
+export const refreshToken = (req, res) => {
+    try {
+        const {token, expiresIn} = generateToken(req.uid)
+
+        return res.json({token, expiresIn})
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: "Error del servidor"})
+    }
+}
+
+export const logout = (req, res) => {
+    res.clearCookie("refreshToken")
+    res.json({ok:true})
+}
+
