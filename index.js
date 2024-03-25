@@ -11,9 +11,9 @@ import redirectRouter from './routes/redirect.route.js'
 const app = express()
 
 //con esta tecnica no entran a los controladores
-const whiteList = [process.env.ORIGIN1]
+const whiteList = [process.env.ORIGIN1, process.env.ORIGIN2]
 
-app.use(cors({
+/*app.use(cors({
     origin: function(origin, callback){
         if(whiteList.includes(origin)) {
             return callback(null, origin)
@@ -22,7 +22,20 @@ app.use(cors({
             "Erro de CORS origin " + origin + " No autorizado"
         )
     }
-}))
+}))*/
+
+app.use(
+    cors({
+        origin: function(origin, callback){
+            if(!origin || whiteList.includes(origin)){
+                return callback(null, origin)
+            }
+            return callback(
+                "Erro de CORS origin " + origin + " No autorizado"
+            )
+        }
+    })
+)
 
 app.use(express.json())
 app.use(cookieParser());
