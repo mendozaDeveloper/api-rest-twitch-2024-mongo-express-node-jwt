@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
-const {Schema, model} = mongoose;
+const { Schema, model } = mongoose;
 
 const linkSchema = new Schema({
     longLink: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
     },
     nanoLink: {
         type: String,
         required: true,
         trim: true,
-        unique: true
+        unique: true,
     },
     uid: {
         type: Schema.Types.ObjectId,
         ref: "User",
-        required: true
-    }
-})
+        required: true,
+    },
+});
 
-export const Link = model("Link", linkSchema)
+export const Link = model("Link", linkSchema);
