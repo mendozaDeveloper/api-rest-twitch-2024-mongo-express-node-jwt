@@ -8,10 +8,7 @@ import {
 } from "../controllers/auth.controller.js";
 import { requireRefreshToken } from "../middlewares/requireRefreshToken.js";
 import { requireToken } from "../middlewares/requireToken.js";
-import {
-    bodyLoginValidator,
-    bodyRegisterValidator,
-} from "../middlewares/validatorManager.js";
+import { bodyLoginValidator, bodyRegisterValidator } from "../middlewares/validatorManager.js";
 
 const router = Router();
 
